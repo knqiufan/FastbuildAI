@@ -5,7 +5,7 @@ import { checkIfPathInStack, findStackTargetFile } from "../utils/helper.util";
 import { getTablePrefix } from "../utils/table-name.util";
 
 /**
- * 应用实体装饰器
+ * 应用实体装饰器（添加表名前缀、使用环境检查增强）
  *
  * @param name 实体名称
  * @returns 装饰器函数
@@ -63,10 +63,13 @@ export function AppEntity(options?: string | EntityOptions): ClassDecorator {
             tableName = getTablePrefix(options.name);
         } else {
             // 如果没有提供表名，使用类名（转换为snake_case）
-            const className = target.name
-                .replace(/([A-Z])/g, "_$1")
-                .toLowerCase()
-                .slice(1);
+
+            // 将类名转换为 snake_case 风格表名
+            const className = target.name // 获取类名（如 UserEntity）
+                .replace(/([A-Z])/g, "_$1") // 在大写字母前加下划线（UserEntity -> _User_Entity）
+                .toLowerCase() // 全部转为小写（_user_entity）
+                .slice(1); // 去掉开头的第一个字符（因为第一个字符是多余的下划线），得到 user_entity
+
             tableName = getTablePrefix(className);
         }
 
